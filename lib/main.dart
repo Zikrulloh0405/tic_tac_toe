@@ -82,6 +82,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: isDarkMode ? Colors.black38 : Colors.white,
         title: Text(
           'Tic Tac Toe',
@@ -89,7 +90,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         actions: [
           IconButton(
-            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(
+              isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
             onPressed: () {
               setState(() {
                 isDarkMode = !isDarkMode;
@@ -101,53 +105,55 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       ),
       backgroundColor: isDarkMode ? Colors.black38 : Colors.white,
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: Text(
-                    'Player X',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: _getTextColor()),
-                  ),
-                ),
-                Text(
-                  "= $xScore",
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(30),
+                child: Text(
+                  'Player X',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: _getTextColor(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: Text(
-                    'Player 0',
-                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: _getTextColor(),
-                    ),
-                  ),
+                      color: _getTextColor()),
                 ),
-                Text(
-                  "= $oScore",
+              ),
+              Text(
+                "= $xScore",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _getTextColor(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(30),
+                child: Text(
+                  'Player 0',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _getTextColor(),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Text(
+                "= $oScore",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _getTextColor(),
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            flex: 4,
+          const SizedBox(
+            height: 50,
+          ),
+          SizedBox(
+            height: 500,
             child: GridView.builder(
                 itemCount: 9,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -174,15 +180,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   );
                 }),
           ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _clearScoreBoard,
-                  child: const Text("Clear Score Board"),
-                )
-              ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: MaterialButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40)),
+              minWidth: double.infinity,
+              height: 50,
+              color: Colors.deepOrangeAccent,
+              onPressed: _clearScoreBoard,
+              child: const Text(
+                "Clear Score Board",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ],
@@ -201,10 +211,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void _tapped(int index) {
     setState(() {
       if (oTurn && displayElement[index] == '') {
-        displayElement[index] = 'O';
+        displayElement[index] = 'X';
         filledBoxes++;
       } else if (!oTurn && displayElement[index] == '') {
-        displayElement[index] = 'X';
+        displayElement[index] = 'O';
         filledBoxes++;
       }
       oTurn = !oTurn;
@@ -273,6 +283,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             actions: [
               OutlinedButton(
                   onPressed: () {
+                    _clearScoreBoard();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Play Again'))
@@ -302,7 +313,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             actions: [
               OutlinedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    _clearScoreBoard();
+                    Navigator.pop(context);
                   },
                   child: const Text('Play Again'))
             ],

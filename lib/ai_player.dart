@@ -1,19 +1,20 @@
+import 'dart:math';
+
 class AIPlayer {
   int findBestMove(List<String> board) {
     int bestMove = -1;
-    int bestScore =
-        -1000; // Initialize with a low score for maximizing player (AI)
+    int bestScore = 1000; // Initialize with a high score for minimizing player (AI)
 
     // Loop through all empty cells on the board
     for (int i = 0; i < board.length; i++) {
       if (board[i] == '') {
         // Make a move and calculate the score for the current move
-        board[i] = 'X'; // Assuming AI plays as 'O'
-        int score = minimax(board, 0, false);
+        board[i] = 'O'; // AI plays as 'O'
+        int score = minimax(board, 0, false, -1000, 1000);
         board[i] = ''; // Undo the move
 
-        // Update the best move if the current move has a higher score
-        if (score > bestScore) {
+        // Update the best move if the current move has a lower score
+        if (score < bestScore) {
           bestScore = score;
           bestMove = i;
         }
@@ -23,15 +24,14 @@ class AIPlayer {
     return bestMove;
   }
 
-  int minimax(List<String> board, int depth, bool isMaximizingPlayer) {
+  int minimax(List<String> board, int depth, bool isMaximizingPlayer, int alpha, int beta) {
     List<String> winningCombination = findWinningCombination(board);
 
     if (winningCombination.isNotEmpty) {
-      // Evaluate the score based on the winner
-      if (winningCombination[0] == 'X') {
-        return 1; // AI wins
+      if (winningCombination[0] == 'O') {
+        return -10 + depth; // AI wins (the sooner, the better)
       } else {
-        return -1; // Human wins
+        return 10 - depth; // Human wins (the later, the better)
       }
     } else if (isBoardFull(board)) {
       return 0; // It's a draw
@@ -41,11 +41,13 @@ class AIPlayer {
       int bestScore = -1000;
       for (int i = 0; i < board.length; i++) {
         if (board[i] == '') {
-          board[i] = 'X'; // Assuming AI plays as 'O'
-          int score = minimax(board, depth + 1, false);
+          board[i] = 'X'; // Human plays as 'X'
+          int score = minimax(board, depth + 1, false, alpha, beta);
           board[i] = ''; // Undo the move
-          if (score > bestScore) {
-            bestScore = score;
+          bestScore = max(bestScore, score);
+          alpha = max(alpha, score);
+          if (beta <= alpha) {
+            break; // Beta cut-off
           }
         }
       }
@@ -54,11 +56,13 @@ class AIPlayer {
       int bestScore = 1000;
       for (int i = 0; i < board.length; i++) {
         if (board[i] == '') {
-          board[i] = 'O'; // Assuming human plays as 'X'
-          int score = minimax(board, depth + 1, true);
+          board[i] = 'O'; // AI plays as 'O'
+          int score = minimax(board, depth + 1, true, alpha, beta);
           board[i] = ''; // Undo the move
-          if (score < bestScore) {
-            bestScore = score;
+          bestScore = min(bestScore, score);
+          beta = min(beta, score);
+          if (beta <= alpha) {
+            break; // Alpha cut-off
           }
         }
       }
